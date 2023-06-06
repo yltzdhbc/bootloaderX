@@ -50,3 +50,9 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+/proj/RTE
+/proj/Objects
+/proj/Listings
+/proj/proj.uvguix.flame.yu
+/proj/.vscode

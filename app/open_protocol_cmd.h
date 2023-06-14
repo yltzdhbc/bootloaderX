@@ -13,6 +13,7 @@
 
 #include "stdint.h"
 #include "open_protocol.h"
+#include "gd32f4xx.h"
 
 
 #pragma pack(push, 1)
@@ -57,6 +58,14 @@ typedef struct
 }open_cmd_set_id_rsp_t;
 
 #define OPEN_CMD_UPGRADE_ENTER              (0x0021)
+
+typedef struct
+{
+    uint8_t encry;
+    uint8_t sn_crc16;
+}open_cmd_enter_loader_rsp_t;
+
+#define OPEN_CMD_STOP_BOOT_APP              (0x0025)
 
 
 #define OPEN_CMD_LED_TEST                   (0x01F0)
@@ -161,4 +170,6 @@ void open_cmd_v1_ver(open_protocol_header_t *pack_desc);
 
 int get_proxy_common_idx(uint16_t ext_cmd);
 void open_cmd_proxy_common(open_protocol_header_t *pack_desc);
+void open_cmd_stop_boot_app(open_protocol_header_t *pack_desc);
+
 #endif

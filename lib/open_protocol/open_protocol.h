@@ -26,8 +26,8 @@
     #define OPEN_PROTOCO_ROUTE_NUM_MAX           (10)
 #endif
 
-#define GET_OFFSET(type, member)             ((size_t)(&((type *)0)->member))
-// #define GET_OFFSET(type,member)              ((size_t)(&(((typeof(type)*)0)->member)))   //从结构体中获得成员的位置偏移
+// #define GET_OFFSET(type, member)             ((size_t)(&((type *)0)->member))
+#define GET_OFFSET(type,member)              ((size_t)(&(((typeof(type)*)0)->member)))   //从结构体中获得成员的位置偏移
 #define MEM_SIZE(type, member)               ((size_t)(sizeof(((type*)0)->member)))      //从结构体中获得成员的大小
 #define OPEN_PROTOCOL_PACK_MAX_BYTE          (512)
 #define OPEN_PROTOCOL_TAIL_CRC_SIZE          (sizeof(uint16_t))

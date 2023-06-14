@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "*.ld": "linkerscript",
+        "stdio.h": "c",
+        "stdlib.h": "c",
+        "assert.h": "c",
+        "upgrade.h": "c",
+        "open_protocol_error.h": "c",
+        "stdint.h": "c",
+        "string.h": "c",
+        "bsp_uart.h": "c"
+    }
+}

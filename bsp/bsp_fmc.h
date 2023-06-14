@@ -41,6 +41,18 @@ OF SUCH DAMAGE.
 #include <stdio.h>
 #include "gd32f4xx.h"
 
+typedef enum
+{
+    FLASH_OK = 0,
+    FLASH_BUSY = 1,
+    FLASH_ERROR,
+    FLASH_ERROR_WRP,
+    FLASH_ERROR_PROGRAM,
+    FLASH_COMPLETE,
+    FLASH_TIMEOUT,
+    FLASH_PARAMETER_ERROR,
+}flash_status;
+
 /* FMC sector information */
 typedef struct
 {
@@ -91,5 +103,7 @@ void fmc_write_8bit_data(uint32_t address, uint16_t length, int8_t* data_8);
 void fmc_read_8bit_data(uint32_t address, uint16_t length, int8_t* data_8);
 
 void bsp_fmc_init(void);
+uint32_t flash_erase(uint32_t addr, uint32_t erase_size);
+uint32_t flash_write(uint32_t addr, uint8_t *buf, uint32_t num);
 
 #endif/* __BSP_FMC_H__ */

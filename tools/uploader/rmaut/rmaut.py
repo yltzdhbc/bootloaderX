@@ -169,4 +169,8 @@ if __name__ == '__main__':
 
     .\rmaut.exe -d -p "COM10" -f "D:/ai_hub/ai_hub_module_hw4/Debug/ai_hub_app.bin"
 
+    AA 00 00 7D 03 01 FF FF 02 00 00 02 00 30 23
 """
+
+
+# python rmaut.py -d -p "COM32" -f "./bootloader.bin"

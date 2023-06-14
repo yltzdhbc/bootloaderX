@@ -3,11 +3,14 @@
 #include <stdio.h>
 #include "main.h"
 
+#include "bsp_uart.h"
 #include "bsp_can.h"
 #include "bsp_fmc.h"
 #include "app_protocol.h"
 
-uint32_t current_time = 0;
+uint8_t g_app_start = 1;
+
+uint32_t time_now = 0;
 uint32_t time_last[3] = {0};
 
 /*!
@@ -28,12 +31,21 @@ int main(void)
 
     while (1)
     {
-        current_time = sys_tick_ms_get();
+        time_now = sys_tick_ms_get();
 
-        if (current_time - time_last[0] > 2)
+        if (time_now - time_last[0] > 2)
         {
-            time_last[0] = current_time;
+            time_last[0] = time_now;
             app_protocol_loop();
         }
     }
 }
+
+// /* retarget the C library printf function to the USART */
+// int fputc(int ch, FILE *f)
+// {
+//     usart_data_transmit(USART0, (uint8_t)ch);
+//     // while (RESET == usart_flag_get(USART0, USART_FLAG_TBE))
+//     //     ;
+//     return ch;
+// }

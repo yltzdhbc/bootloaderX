@@ -1,4 +1,5 @@
 #include "upgrade.h"
+#include "bsp_fmc.h"
 
 static fw_upgrade_status_e upgrade_status = UPGRADE_WAIT_FW_INFO;
 static uint32_t fw_size = 0;
@@ -22,7 +23,7 @@ void upgrade_info_pack_handle(open_protocol_header_t *pack_desc)
     open_cmd_upgrade_info_req *req = (open_cmd_upgrade_info_req *)(pack_desc->data);
 
     /* 匹配硬件码和SN的CRC16 */
-    if ((strncmp(local_hw_id, req->hw_id, 16) != 0) && (req->sn_crc16 != local_sn_crc16))
+    if ((strncmp(local_hw_id, (char *)req->hw_id, 16) != 0) && (req->sn_crc16 != local_sn_crc16))
     {
         return;
     }
@@ -53,7 +54,7 @@ void upgrade_info_pack_handle(open_protocol_header_t *pack_desc)
         /*重新设置看门狗的时间 -> 25s*/
 
         /* 擦除Flash并将相关参数初始化 */
-        // if (FLASH_OK != flash_erase(UPGRADE_START_FLASH_ADDRESS, erase_bytes))
+        if (FLASH_OK != flash_erase(UPGRADE_START_FLASH_ADDRESS, erase_bytes))
         {
             upgrade_comm_ack(pack_desc, OPEN_PROTO_FLASH_ERROR);
             /*重新设置看门狗的时间 -> 1.5s*/
@@ -94,7 +95,11 @@ void upgrade_data_pack_handle(open_protocol_header_t *pack_desc)
         /* 写入升级数据 */
         if (req->pack_idx == fw_pack_idx)
         {
-            // if (FLASH_OK)
+            if (FLASH_OK != flash_write(UPGRADE_START_FLASH_ADDRESS + flash_write_ptr, req->fw_data, req->pack_size))
+            {
+                upgrade_comm_ack(pack_desc, OPEN_PROTO_FLASH_ERROR);
+                return;
+            }
         }
 
         upgrade_comm_ack(pack_desc, OPEN_PROTO_NORMAL);
@@ -105,6 +110,27 @@ void upgrade_data_pack_handle(open_protocol_header_t *pack_desc)
 void upgrade_end_pack_handle(open_protocol_header_t *pack_desc)
 {
     open_cmd_upgrade_end_req *req = (open_cmd_upgrade_end_req *)(pack_desc->data);
+    uint32_t flash_write_num = MAX_SUPPORT_FW_PACK_SIZE;
+    uint8_t fw_md5[16];
+
+    if (pack_desc->is_ack == 0 && req->sn_crc16 == local_sn_crc16)
+    {
+        /* 检查包序号和升级状态是否正确 */
+        if (upgrade_status != UPGRADE_WAIT_END)
+        {
+            upgrade_comm_ack(pack_desc, OPEN_PROTO_IDX_ERROR);
+            return;
+        }
+
+        // 計算MO5进行对比
+
+        // 写入系统参数
+
+        upgrade_is_end = 1;
+
+        upgrade_comm_ack(pack_desc, OPEN_PROTO_NORMAL);
+        return;
+    }
 }
 
 int upgrade_check_app(uint8_t *app_md5, uint32_t app_size)

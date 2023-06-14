@@ -55,7 +55,7 @@ def parserFunc(unparsed_args):
                      dest="baud",
                      type="int",
                      help="Serial port baud rate used when flashing/reading",
-                     default=0
+                     default=115200
                      )
     parser.add_option_group(group)
 

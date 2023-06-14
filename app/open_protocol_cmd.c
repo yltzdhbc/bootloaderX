@@ -24,9 +24,10 @@
 #include "sys_param.h"
 // #include "user_main.h"
 // #include "cmsis_os.h"
+#include <stdio.h>
 
 /* Private define ------------------------------------------------------------*/
-#define STOP_BOOT_APP_FLAG_VAR          (0x1234abcd)
+#define STOP_BOOT_APP_FLAG_VAR (0x1234abcd)
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -35,12 +36,14 @@
 // extern uint16_t g_sn_crc16;
 // extern sys_param_t g_sys_param;                        //系统参数
 
-//用于停止启动的标志(APP和Loader中都不初始化，指定位置0x2020000），重新上电可以被Loader读到
-//如果等于0x1234abcd则停留在Loader中，该变量进入Loader后置0
-uint32_t *stop_boot_app_flag = (uint32_t*)(0x20200000);
+// 用于停止启动的标志(APP和Loader中都不初始化，指定位置0x2020000），重新上电可以被Loader读到
+// 如果等于0x1234abcd则停留在Loader中，该变量进入Loader后置0
+uint32_t *stop_boot_app_flag = (uint32_t *)(0x20200000);
 
 /* Private function prototypes -----------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
+
+extern uint8_t g_app_start;
 
 /**
  * @brief 默认命令解包
@@ -51,15 +54,14 @@ uint32_t *stop_boot_app_flag = (uint32_t*)(0x20200000);
 void open_cmd_default(open_protocol_header_t *pack_desc)
 {
     uint8_t ack_data = 0;
-    if(pack_desc->is_ack == 0)
+    if (pack_desc->is_ack == 0)
     {
-        if(pack_desc->need_ack)
+        if (pack_desc->need_ack)
         {
             open_proto_ack(pack_desc, &ack_data, 1);
         }
     }
 }
-
 
 void mcu_software_reset(void)
 {
@@ -76,15 +78,19 @@ void mcu_software_reset(void)
 void open_cmd_reboot(open_protocol_header_t *pack_desc)
 {
     open_cmd_version_rsp_t rsp;
-    if(pack_desc->is_ack == 0)
+    if (pack_desc->is_ack == 0)
     {
         mcu_software_reset();
-        if(pack_desc->need_ack)
+        if (pack_desc->need_ack)
         {
-            open_proto_ack(pack_desc, (uint8_t*)(&rsp), sizeof(rsp));
+            open_proto_ack(pack_desc, (uint8_t *)(&rsp), sizeof(rsp));
         }
     }
 }
+
+#define APP_VERSION (0X0101000D)
+#define LOADER_VERSION (0X01010000)
+#define HW_VER_ID "robomaster target v2.0.1"
 
 /**
  * @brief 查询版本
@@ -93,21 +99,23 @@ void open_cmd_reboot(open_protocol_header_t *pack_desc)
  */
 void open_cmd_ver(open_protocol_header_t *pack_desc)
 {
-    // open_cmd_version_rsp_t rsp;
-    // if(pack_desc->is_ack == 0)
-    // {
-    //     if(pack_desc->need_ack)
-    //     {
-    //         sys_param_t param;
-    //         sys_param_read(&param);
-    //         memset(&rsp, 0, sizeof(rsp));
-    //         rsp.loader_ver = param.loader_ver;
-    //         rsp.app_ver = APP_VERSION;
-    //         memcpy(rsp.hw_id, HW_VER_ID, sizeof(HW_VER_ID));
-    //         board_sn_read(rsp.sn);
-    //         open_proto_ack(pack_desc, (uint8_t*)(&rsp), sizeof(rsp));
-    //     }
-    // }
+    open_cmd_version_rsp_t rsp;
+    if (pack_desc->is_ack == 0)
+    {
+        if (pack_desc->need_ack)
+        {
+            // sys_param_t param;
+            // sys_param_read(&param);
+            // memset(&rsp, 0, sizeof(rsp));
+            // rsp.loader_ver = param.loader_ver;
+            rsp.loader_ver = LOADER_VERSION;
+            rsp.app_ver = APP_VERSION;
+            memcpy(rsp.hw_id, HW_VER_ID, sizeof(HW_VER_ID));
+            // board_sn_read(rsp.sn);
+            rsp.sn[0] = 1;
+            open_proto_ack(pack_desc, (uint8_t *)(&rsp), sizeof(rsp));
+        }
+    }
 }
 
 /**
@@ -185,23 +193,36 @@ void open_cmd_set_id(open_protocol_header_t *pack_desc)
 void open_cmd_enter_loader(open_protocol_header_t *pack_desc)
 {
     open_comm_rsp_t rsp;
-    if(pack_desc->is_ack == 0)
+    if (pack_desc->is_ack == 0)
     {
-        *stop_boot_app_flag = STOP_BOOT_APP_FLAG_VAR;
-        if(pack_desc->need_ack)
+        g_app_start = 0;
+        if (pack_desc->need_ack)
         {
             rsp.err_code = 0;
-            open_proto_ack(pack_desc, (uint8_t*)(&rsp), sizeof(rsp));
+            open_proto_ack(pack_desc, (uint8_t *)(&rsp), sizeof(rsp));
         }
-        mcu_software_reset();
+    }
+}
+
+void open_cmd_stop_boot_app(open_protocol_header_t *pack_desc)
+{
+    open_comm_rsp_t rsp;
+    if (pack_desc->is_ack == 0)
+    {
+        g_app_start = 0;
+        if (pack_desc->need_ack)
+        {
+            rsp.err_code = 0;
+            open_proto_ack(pack_desc, (uint8_t *)(&rsp), sizeof(rsp));
+        }
     }
 }
 
 /**
-* @brief LED测试
-*
-* @param pack_desc
-*/
+ * @brief LED测试
+ *
+ * @param pack_desc
+ */
 void open_cmd_led_test(open_protocol_header_t *pack_desc)
 {
     // open_cmd_led_test_t *req = (open_cmd_led_test_t*)(pack_desc->data);
@@ -296,10 +317,10 @@ void open_cmd_slot100_test(open_protocol_header_t *pack_desc)
 }
 
 /**
-* @brief 打开/关闭 AI核心板图像传输
-*
-* @param pack_desc
-*/
+ * @brief 打开/关闭 AI核心板图像传输
+ *
+ * @param pack_desc
+ */
 void open_cmd_en_ai_board_img(open_protocol_header_t *pack_desc)
 {
     // open_cmd_en_ai_board_img_req_t *req = (open_cmd_en_ai_board_img_req_t*)(pack_desc->data);
@@ -324,10 +345,10 @@ void open_cmd_en_ai_board_img(open_protocol_header_t *pack_desc)
 }
 
 /**
-* @brief 烧录SN
-*
-* @param pack_desc
-*/
+ * @brief 烧录SN
+ *
+ * @param pack_desc
+ */
 void open_cmd_burn_sn(open_protocol_header_t *pack_desc)
 {
     // open_cmd_burn_sn_req *req = (open_cmd_burn_sn_req*)(pack_desc->data);
@@ -344,12 +365,11 @@ void open_cmd_burn_sn(open_protocol_header_t *pack_desc)
     // }
 }
 
-
 /**
-* @brief 支持原有V1升级逻辑的查询版本，用于大包升级
-*
-* @param pack_desc
-*/
+ * @brief 支持原有V1升级逻辑的查询版本，用于大包升级
+ *
+ * @param pack_desc
+ */
 void open_cmd_v1_ver(open_protocol_header_t *pack_desc)
 {
     // open_cmd_ver_query_rsp rsp;
@@ -372,11 +392,11 @@ void open_cmd_v1_ver(open_protocol_header_t *pack_desc)
 
 /* 临时支持AI核心板的v1转发逻辑，正式版本废弃*/
 static uint16_t cmd_proxy_common_support_cmd[5] = {
-    0x0106, //查询模型名称
-    0x0108, //查询模型MD5
-    0x0304, //更新模型—Step1：发送模型信息
-    0x0306, //更新模型—Step2：传输模型数据
-    0x0308  //更新模型—Step3：模型传输完成
+    0x0106, // 查询模型名称
+    0x0108, // 查询模型MD5
+    0x0304, // 更新模型—Step1：发送模型信息
+    0x0306, // 更新模型—Step2：传输模型数据
+    0x0308  // 更新模型—Step3：模型传输完成
 };
 
 open_protocol_header_t g_proxy_common_open_header[5];

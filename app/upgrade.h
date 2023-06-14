@@ -4,6 +4,7 @@
 #include "gd32f4xx.h"
 #include "open_protocol_cmd.h"
 #include "open_protocol_error.h"
+#include <string.h>
 
 #define MAX_SUPPORT_FW_PACK_SIZE (256)
 #define UPGRADE_START_FLASH_ADDRESS (0x70100000)

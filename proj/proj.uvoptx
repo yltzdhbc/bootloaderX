@@ -152,34 +152,34 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>101</LineNumber>
+          <LineNumber>23</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134223056</Address>
+          <Address>134229390</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\app\open_protocol_cmd.c</Filename>
+          <Filename>..\app\upgrade.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\proj\../app/open_protocol_cmd.c\101</Expression>
+          <Expression>\\proj\../app/upgrade.c\23</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>116</LineNumber>
+          <LineNumber>43</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134223116</Address>
+          <Address>134229480</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\app\open_protocol_cmd.c</Filename>
+          <Filename>..\app\upgrade.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\proj\../app/open_protocol_cmd.c\116</Expression>
+          <Expression>\\proj\../app/upgrade.c\43</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -228,12 +228,17 @@
           <WinNumber>1</WinNumber>
           <ItemText>len</ItemText>
         </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>local_hw_id</ItemText>
+        </Ww>
       </WatchWindow1>
       <MemoryWindow1>
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
-          <ItemText>\\proj\../lib/open_protocol/open_protocol.c\open_proto_ack\out_buff</ItemText>
+          <ItemText>0x08020000</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>

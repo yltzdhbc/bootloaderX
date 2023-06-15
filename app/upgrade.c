@@ -22,11 +22,11 @@ void upgrade_info_pack_handle(open_protocol_header_t *pack_desc)
 {
     open_cmd_upgrade_info_req *req = (open_cmd_upgrade_info_req *)(pack_desc->data);
 
-    /* 匹配硬件码和SN的CRC16 */
-    if ((strncmp(local_hw_id, (char *)req->hw_id, 16) != 0) && (req->sn_crc16 != local_sn_crc16))
-    {
-        return;
-    }
+//    /* 匹配硬件码和SN的CRC16 */
+//    if ((strncmp(local_hw_id, (char *)req->hw_id, 16) != 0) && (req->sn_crc16 != local_sn_crc16))
+//    {
+//        return;
+//    }
 
     if (pack_desc->is_ack == 0)
     {

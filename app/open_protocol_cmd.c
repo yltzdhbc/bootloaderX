@@ -90,7 +90,7 @@ void open_cmd_reboot(open_protocol_header_t *pack_desc)
 
 #define APP_VERSION (0X0101000D)
 #define LOADER_VERSION (0X01010000)
-#define HW_VER_ID "robomaster target v2.0.1"
+#define HW_VER_ID "target_v2.0.1"
 
 /**
  * @brief 查询版本
